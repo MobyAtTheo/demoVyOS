@@ -1,0 +1,109 @@
+interfaces {
+    dummy dum5 {
+        address 192.168.5.1/24
+        description "vyETH: dum5 192.168.5.1/24"
+    }
+    ethernet eth0 {
+        duplex auto
+        hw-id 00:0c:29:36:13:36
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth1 {
+        description "vyETH: eth1 peer005"
+        duplex auto
+        hw-id 00:0c:29:36:13:40
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth2 {
+        address 172.16.115.32/24
+        description "MacOS connection"
+        duplex auto
+        hw-id 00:50:56:2a:63:c5
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth3 {
+        address 172.21.0.2/24
+        duplex auto
+        hw-id 00:50:56:30:6f:ad
+        smp_affinity auto
+        speed auto
+    }
+    loopback lo {
+    }
+}
+protocols {
+    bgp 65532 {
+        neighbor 172.16.115.31 {
+            remote-as 65531
+        }
+        neighbor 172.16.115.33 {
+            remote-as 65533
+        }
+        network 172.16.115.0/24 {
+        }
+        network 192.168.5.0/24 {
+        }
+    }
+}
+service {
+    ssh {
+        port 22
+    }
+}
+system {
+    config-management {
+        commit-revisions 20
+    }
+    console {
+        device ttyS0 {
+            speed 9600
+        }
+    }
+    host-name router002
+    login {
+        user vyos {
+            authentication {
+                encrypted-password $1$DpsnRljB$i9nLFk.760L1RpnAIXB3M.
+                plaintext-password ""
+            }
+            level admin
+        }
+    }
+    ntp {
+        server 0.pool.ntp.org {
+        }
+        server 1.pool.ntp.org {
+        }
+        server 2.pool.ntp.org {
+        }
+    }
+    package {
+        auto-sync 1
+        repository community {
+            components main
+            distribution helium
+            password ""
+            url http://packages.vyos.net/vyos
+            username ""
+        }
+    }
+    syslog {
+        global {
+            facility all {
+                level notice
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    time-zone UTC
+}
+
+
+/* Warning: Do not remove the following line. */
+/* === vyatta-config-version: "webgui@1:conntrack@1:zone-policy@1:qos@1:firewall@5:config-management@1:wanloadbalance@3:quagga@2:dhcp-server@4:nat@4:vrrp@1:dhcp-relay@1:cron@1:cluster@1:ipsec@4:system@6:conntrack-sync@1:webproxy@1" === */
+/* Release version: VyOS 1.1.8 */

@@ -1,0 +1,102 @@
+interfaces {
+    dummy dum3 {
+        address 192.168.3.3/24
+    }
+    ethernet eth0 {
+        duplex auto
+        hw-id 00:0c:29:a1:c1:3e
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth1 {
+        duplex auto
+        hw-id 00:0c:29:a1:c1:48
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth2 {
+        address 172.16.115.33/24
+        description "MacOS connection"
+        duplex auto
+        hw-id 00:0c:29:a1:c1:52
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth3 {
+        address 172.21.0.3/24
+        duplex auto
+        hw-id 00:0c:29:a1:c1:5c
+        smp_affinity auto
+        speed auto
+    }
+    loopback lo {
+    }
+}
+protocols {
+    bgp 65533 {
+        neighbor 172.16.115.32 {
+            remote-as 65532
+        }
+        network 192.168.3.0/24 {
+        }
+    }
+}
+service {
+    ssh {
+        port 22
+    }
+}
+system {
+    config-management {
+        commit-revisions 20
+    }
+    console {
+        device ttyS0 {
+            speed 9600
+        }
+    }
+    host-name router003
+    login {
+        user vyos {
+            authentication {
+                encrypted-password $1$UV2AlIIA$fZjgRwMq6nhnnVkDW4dz.1
+                plaintext-password ""
+            }
+            level admin
+        }
+    }
+    ntp {
+        server 0.pool.ntp.org {
+        }
+        server 1.pool.ntp.org {
+        }
+        server 2.pool.ntp.org {
+        }
+    }
+    package {
+        auto-sync 1
+        repository community {
+            components main
+            distribution helium
+            password ""
+            url http://packages.vyos.net/vyos
+            username ""
+        }
+    }
+    syslog {
+        global {
+            facility all {
+                level notice
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    time-zone UTC
+}
+
+
+/* Warning: Do not remove the following line. */
+/* === vyatta-config-version: "cluster@1:zone-policy@1:system@6:quagga@2:firewall@5:conntrack@1:conntrack-sync@1:wanloadbalance@3:dhcp-relay@1:ipsec@4:webgui@1:nat@4:webproxy@1:cron@1:config-management@1:qos@1:dhcp-server@4:vrrp@1" === */
+/* Release version: VyOS 1.1.8 */
