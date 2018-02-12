@@ -1,3 +1,5 @@
 
 username: vyos
 password: vyatta
+
+while true; do ${vyatta_bindir}/vtyshow.pl show ip bgp; sleep 3; echo ":::"; done
