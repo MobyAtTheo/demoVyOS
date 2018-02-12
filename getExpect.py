@@ -5,23 +5,38 @@ import pexpect
 
 
 logFile=open("myLog001.txt", "a")
-print(type(logFile))
+#print(type(logFile))
+#Note: py3 / py2 issues writing to file (write bytes vs string)
 
+
+TIMEOUT=2
 #child = pexpect.spawn('ssh -l vyos 172.16.115.32', logfile="./alogFile.txt")
 #child = pexpect.spawnu('ssh -l vyos 172.16.115.32', logfile=logFile)
 #child = pexpect.spawnu('ssh -l vyos 172.16.115.32')
-child = pexpect.spawnu('ssh -l vyos 172.16.115.32', timeout=2)
+
+child = pexpect.spawnu('ssh -l vyos 172.16.115.32', timeout=int(TIMEOUT))
 child.expect ('.*assword:')
 child.sendline ('vyatta')
 
+"""
+Fork this later / alt call from a different module
 
-#child.expect()
+child1 = pexpect.spawnu('ssh -l vyos 172.16.115.31', timeout=200)
+child1.expect ('.*assword:')
+child1.sendline ('vyatta')
 
+child3 = pexpect.spawnu('ssh -l vyos 172.16.115.33', timeout=200)
+child3.expect ('.*assword:')
+child3.sendline ('vyatta')
+"""
+
+
+promptR001='.*router001:'
 promptR002='.*router002:'
 promptR003='.*router003:'
 
-#promptED='.*router.*\#'
-#promptED='.*vyos@router002#'
+#try 1: promptED='.*router.*\#'
+#try 2: promptED='.*vyos@router002#'
 promptED='.*\[edit\]'
 
 
@@ -46,6 +61,45 @@ def do_some_other_thing(child):
 
     child.expect (promptR002)
     child.sendline('\r\n')
+    child.sendline('\r\n')
+    child.sendline('\r\n')
+
+
+
+
+def addNIntAndRouting(child, prompt):
+    #child = pexpect.spawnu('ssh -l vyos 172.16.115.33', timeout=2)
+    #child.expect ('.*assword:')
+    #child.sendline ('vyatta')
+
+    child.sendline('\r\n')
+    child.expect (prompt)
+    child.sendline('show host name')
+    child.expect (prompt)
+    child.sendline('show interface')
+    child.expect (prompt)
+    child.sendline('configure')
+    child.expect (prompt)
+    child.sendline('set interface ethernet eth1 description "vyETH: eth1 peer005"')
+    child.expect (promptED)
+    child.sendline('set interface dummy dum5 description "vyETH: dum5 192.168.5.1/24"')
+    child.expect (promptED)
+    child.sendline('set interface dummy dum5 address 192.168.5.1/24')
+    child.expect (promptED)
+    child.sendline('set protocols bgp 65532 network 192.168.5.0/24')
+    child.expect (promptED)
+    child.sendline('commit')
+    child.expect (promptED)
+    child.sendline('exit')
+
+    child.expect (prompt)
+    child.sendline('\r\n')
+    child.expect (prompt)
+
+    child.sendline('reset ip bgp all')
+
+    child.expect (prompt)
+    child.sendline('show ip bgp')
     child.sendline('\r\n')
     child.sendline('\r\n')
 
@@ -105,9 +159,7 @@ def chkBGPASN(child):
         pass
     elif index == 2:
         do_some_other_thing(child)
-        print('blah')
         child.sendline('show host name')
-        pass
     elif index == 3:
         #do_something_completely_different('004')
         pass
@@ -118,11 +170,16 @@ def chkBGPASN(child):
 
 chkBGPASN(child)
 verifyDescR2(child)
+
+addNIntAndRouting(child, promptR002)
+
+
 exitDevice(child)
+#exitDevice(child1)
+#exitDevice(child3)
 
 
 
-#child.interact()
 
 
 ### Close out files
